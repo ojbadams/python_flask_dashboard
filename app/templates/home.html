@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard</title>
+  
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.css') }}" rel="stylesheet" type="text/css">
+  <link href=" {{url_for('static', filename='css/ruang-admin.css') }}" rel="stylesheet" type="text/css">
+</head>
+
+<body id="page-top">
+  <div id="wrapper"> 
+    <ul class="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar">
+        <div class="sidebar-brand d-flex align-items-center justify-content-center">
+          Dashboard
+        </div>
+      <li class="nav-item active">
+        <a class="nav-link" href= "{{ url_for('home') }}">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Dashboard</span></a>
+        <a class="nav-link" href= "{{ url_for('settings') }}">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Settings</span></a> 
+        <a class="nav-link" href= "{{ url_for('login') }}">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Logout</span></a>       
+      </li>
+      <br>
+      <input type="submit" value = "Refresh" class = "btn btn-primary">
+    </ul>
+    
+    <!-- Sidebar -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          <br>
+
+          <div id = "div1"> </div>
+
+
+
+          <div class = "row">
+              <!-- Area Chart -->
+              <div class="col-xl11 col-lg-11">
+                <div class="card mb-1">
+                  <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Daily Site Values</h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart-area">
+                      <canvas id="panel_arrivals" height="230px" width="700px"> </canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class = "row">
+              <div class="col-lg-3">
+                <div class="card mb-4">
+                    <!--<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                      <h6 class="m-0 font-weight-bold text-primary"> System Usage </h6>
+                    </div>
+                    <div class="card-body">
+                      <ul>
+                        <li>A date can be selected using the date picker in the grid above</li>
+                        <li>Press the "Get Static Analysis" button to get predictions for arrivals and site capacities for either current date or future date</li>
+                        <li>Realtime Monitoring option can be turned on for the current day only and will update every 15 minutes</li>
+                        <li>Predictions and Realtime information will be saved for each day</li> 
+                      </ul>
+                    </div> -->
+                </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+
+   <!--line chart position -->
+ 
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+
+ <script>
+    // This function updates the graph with realtime information - makes an API call to the flask app to get latest data
+     var can_arrivals = document.getElementById("panel_arrivals").getContext("2d");
+     var canData_arrivals = {
+          labels:  {{ queue_lengths|tojson }},
+          datasets: [
+              { label: "Combined Queue Length",
+                borderColor: 'rgba(147, 22, 33, 0.8)',
+                pointBackgroundColor : "rgba(147, 22, 33, 0.8)",
+                fill: true, 
+                data : {{queue_lengths|tojson}} },
+              { label: "Realtime Arrivals Entering ite",
+                borderColor: 'rgba(223, 155, 109, 0.8)',
+                radius: 2,
+                data : {{ queue_lengths|tojson }} }]};
+              
+     
+      var chart_arrivals = new Chart(can_arrivals, {
+      type: "line",
+      data: canData_arrivals,
+      animation: false,
+      ///Boolean - Whether grid lines are shown across the chart
+      scaleShowGridLines : true,
+      //Boolean - Whether to show vertical lines (except Y axis)
+      scaleShowVerticalLines: true,
+      options : {
+        scales : {
+          xAxes: [{
+            display: true, 
+            position: "bottom",
+            ticks: {
+              stepSize: 1,
+            }
+          }]
+        },
+        tooltips : {
+          enabled: false
+          }
+      } 
+     });
+     
+
+      // $.ajax({
+      //   type: 'get', 
+      //   url: '/get_realtime_data', 
+      //   dataType: "json",
+      //   success: function (data)
+      // })
+       
+</script>
+</body>
+
+</html>
